@@ -1,0 +1,343 @@
+#+title: Python Homework: Tree Search
+#+author: Craig Astill
+#+OPTIONS: toc:2
+#+PROPERTY: header-args:mermaid :prologue "exec 2>&1" :epilogue ":" :pupeteer-config-file ~/.puppeteerrc
+#+PROPERTY: header-args:shell :prologue "exec 2>&1" :epilogue ":" :results drawer :async
+* Tree Search:
+** Aim:
+- Search a tree of shares of Funds and Companies.
+  - Funds can be made up of Companies, and/or more Funds.
+  - Funds can be infinitely nested.
+  - Funds are not cyclic.
+  - Company names are unique.
+- Output list of all Company Shares under the /"Ethical Global Fund"/.
+  - but not the Fund names!
+  - Use =weight= to calculate total proportion of value for that
+    parent Fund.
+- Is /"GoldenGagets"/ under the /"Ethical Global Fund"/? And by what
+  proportion?
+- NOTE: Assumptions.
+- NOTE: memory/performance concerns.
+
+** Assumptions:
+
+- This is a Tree Search problem.
+  - Assuming reason will need to be given for the search algorithm used.
+  - Assuming reason for searching given structure vs. normalizing
+    first (memory vs cpu/time).
+
+** Napkin Maths:
+
+Expected percentages for all Companies under the /"Ethical Global
+Fund"/ branch.
+
+*TODO:* Check programmatically!
+
+| Companies     | Weights                                                                         | Percentages |
+|---------------+---------------------------------------------------------------------------------+-------------|
+| MicroFit      | 0.5 * 0.2                                                                       |         10. |
+| GreenCo       | 0.3 * 0.2                                                                       |          6. |
+| GrapeCo       | (0.2 * 0.2) + (0.2 * 0.1 * 0.4 * 0.5) + (0.3 * 0.5) + (0.2 * 0.1 * 0.15) + 0.15 |        34.7 |
+| SolarCorp     | (0.8 * 0.1 * 0.4 * 0.5) + (0.8 * 0.1 * 0.15)                                    |         2.8 |
+| SpaceY        | (0.3 * 0.4 * 0.5) + (0.3 * 0.15)                                                |        10.5 |
+| BeanzRUS      | (0.6 * 0.4 * 0.5) + (0.6 * 0.15)                                                |         21. |
+| GoldenGadgets | 0.3 * 0.5                                                                       |         15. |
+#+TBLFM: $3=$2*100;n5
+
+* Addendum:
+** Original Data:
+
+#+BEGIN_EXAMPLE json
+  [
+    {
+      "name": "Ethical Global Fund",
+      "holdings": [
+        {
+          "name": "Fund B",
+          "weight": 0.2
+        },
+        {
+          "name": "Fund C",
+          "weight": 0.5
+        },
+        {
+          "name": "Fund D",
+          "weight": 0.15
+        },
+        {
+          "name": "GrapeCo",
+          "weight": 0.15
+        }
+      ]
+    },
+    {
+      "name": "Fund B",
+      "holdings": [
+        {
+          "name": "MicroFit",
+          "weight": 0.5
+        },
+        {
+          "name": "GreenCo",
+          "weight": 0.3
+        },
+        {
+          "name": "GrapeCo",
+          "weight": 0.2
+        }
+      ]
+    },
+    {
+      "name": "Fund C",
+      "holdings": [
+        {
+          "name": "Fund D",
+          "weight": 0.4
+        },
+        {
+          "name": "GrapeCo",
+          "weight": 0.3
+        },
+        {
+          "name": "GoldenGadgets",
+          "weight": 0.3
+        }
+      ]
+    },
+    {
+      "name": "Fund D",
+      "holdings": [
+        {
+          "name": "Fund E",
+          "weight": 0.1
+        },
+        {
+          "name": "SpaceY",
+          "weight": 0.3
+        },
+        {
+          "name": "BeanzRUS",
+          "weight": 0.6
+        }
+      ]
+    },
+    {
+      "name": "Fund E",
+      "holdings": [
+        {
+          "name": "GrapeCo",
+          "weight": 0.2
+        },
+        {
+          "name": "SolarCorp",
+          "weight": 0.8
+        }
+      ]
+    }
+  ]
+#+END_EXAMPLE
+
+** Manually Normalised Data:
+
+#+BEGIN_EXAMPLE json
+  [
+    {
+      "name": "Ethical Global Fund",
+      "holdings": [
+        {
+          "name": "Fund B",
+          "weight": 0.2,
+          "holdings": [
+            {
+              "name": "MicroFit",
+              "weight": 0.5
+            },
+            {
+              "name": "GreenCo",
+              "weight": 0.3
+            },
+            {
+              "name": "GrapeCo",
+              "weight": 0.2
+            }
+          ]
+        },
+        {
+          "name": "Fund C",
+          "weight": 0.5,
+          "holdings": [
+            {
+              "name": "Fund D",
+              "weight": 0.4,
+              "holdings": [
+                {
+                  "name": "Fund E",
+                  "weight": 0.1,
+                  "holdings": [
+                    {
+                      "name": "GrapeCo",
+                      "weight": 0.2
+                    },
+                    {
+                      "name": "SolarCorp",
+                      "weight": 0.8
+                    }
+                  ]
+                },
+                {
+                  "name": "SpaceY",
+                  "weight": 0.3
+                },
+                {
+                  "name": "BeanzRUS",
+                  "weight": 0.6
+                }
+              ]
+            },
+            {
+              "name": "GrapeCo",
+              "weight": 0.3
+            },
+            {
+              "name": "GoldenGadgets",
+              "weight": 0.3
+            }
+          ]
+        },
+        {
+          "name": "Fund D",
+          "weight": 0.15,
+          "holdings": [
+            {
+              "name": "Fund E",
+              "weight": 0.1,
+              "holdings": [
+                {
+                  "name": "GrapeCo",
+                  "weight": 0.2
+                },
+                {
+                  "name": "SolarCorp",
+                  "weight": 0.8
+                }
+              ]
+            },
+            {
+              "name": "SpaceY",
+              "weight": 0.3
+            },
+            {
+              "name": "BeanzRUS",
+              "weight": 0.6
+            }
+          ]
+        },
+        {
+          "name": "GrapeCo",
+          "weight": 0.15
+        }
+      ]
+    },
+    {
+      "name": "Fund B",
+      "holdings": [
+        {
+          "name": "MicroFit",
+          "weight": 0.5
+        },
+        {
+          "name": "GreenCo",
+          "weight": 0.3
+        },
+        {
+          "name": "GrapeCo",
+          "weight": 0.2
+        }
+      ]
+    },
+    {
+      "name": "Fund C",
+      "weight": 0.5,
+      "holdings": [
+        {
+          "name": "Fund D",
+          "weight": 0.4,
+          "holdings": [
+            {
+              "name": "Fund E",
+              "weight": 0.1,
+              "holdings": [
+                {
+                  "name": "GrapeCo",
+                  "weight": 0.2
+                },
+                {
+                  "name": "SolarCorp",
+                  "weight": 0.8
+                }
+              ]
+            },
+            {
+              "name": "SpaceY",
+              "weight": 0.3
+            },
+            {
+              "name": "BeanzRUS",
+              "weight": 0.6
+            }
+          ]
+        },
+        {
+          "name": "GrapeCo",
+          "weight": 0.3
+        },
+        {
+          "name": "GoldenGadgets",
+          "weight": 0.3
+        }
+      ]
+    },
+    {
+      "name": "Fund D",
+      "weight": 0.4,
+      "holdings": [
+        {
+          "name": "Fund E",
+          "weight": 0.1,
+          "holdings": [
+            {
+              "name": "GrapeCo",
+              "weight": 0.2
+            },
+            {
+              "name": "SolarCorp",
+              "weight": 0.8
+            }
+          ]
+        },
+        {
+          "name": "SpaceY",
+          "weight": 0.3
+        },
+        {
+          "name": "BeanzRUS",
+          "weight": 0.6
+        }
+      ]
+    },
+    {
+      "name": "Fund E",
+      "holdings": [
+        {
+          "name": "GrapeCo",
+          "weight": 0.2
+        },
+        {
+          "name": "SolarCorp",
+          "weight": 0.8
+        }
+      ]
+    }
+  ]
+#+END_EXAMPLE
+
