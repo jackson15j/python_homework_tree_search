@@ -1,5 +1,6 @@
 """Tree Search Methods."""
 from pathlib import Path
+from pprint import pprint
 import json
 
 
@@ -28,8 +29,22 @@ def _parse_file_contents(json_str: str) -> dict:
     return json.loads(json_str)
 
 
-def _normalise_data(data: dict) -> dict:
-    raise NotImplementedError
+def _normalise_data(data: list) -> list:
+    """When `Fund <x>` is found, find the version with `holdings`
+    and inject back. ie. Funds discovery.
+    """
+    # Need the root funds names and index in list for later lookup and
+    # injection.
+    root_funds = {x["name"]: i for i, x in enumerate(data)}
+
+    for fund in data:
+        for holding in fund.get("holdings", []):
+            if "Fund" in holding["name"]:
+                # FIXME: Dirty assumption based off given data that
+                # all Funds are `Fund <x>`. This could be fixed up to
+                # use the `root_funds` keys.
+                holding["holdings"] = data[root_funds[holding["name"]]]["holdings"]
+    return data
 
 
 def _flatten_branch(root_fund: str, data: dict) -> dict:
@@ -80,7 +95,11 @@ def get_company_percentage_investment(root_fund: str, company: str, data: dict) 
 
 def main():
     # TODO: Call each function in-turn to get final output.
-    pass
+    json_str = _read_file_contents()
+    raw_data = _parse_file_contents(json_str)
+    pprint(raw_data)
+    normalised_data = _normalise_data(raw_data)
+    pprint(normalised_data)
 
 
 if __name__ == "__main__":
