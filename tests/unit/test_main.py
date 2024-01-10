@@ -25,9 +25,18 @@ class TestMain:
         ) is False
 
     def test_get_companies(self):
-        # TODO: Update `data` to match expected output.
-        data = {"a": [{"b": {}}, {"c": {}}]}
-        assert get_companies("a", data) == ["b", "c"]
+        exp = [
+            "MicroFit",
+            "GreenCo",
+            "GrapeCo",
+            "SolarCorp",
+            "SpaceY",
+            "BeanzRUS",
+            "GoldenGadgets",
+        ]
+        assert get_companies(
+            "Ethical Global Fund", NORMALISED_DATA
+        ).sort() == exp.sort()
 
     def test_get_company_percentage_investment(self):
         # TODO: Update `data` to match expected output.
