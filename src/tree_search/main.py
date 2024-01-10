@@ -8,6 +8,10 @@ class FileNotFound(Exception):
     """File not found exception."""
 
 
+class RootFundNotFound(Exception):
+    """Root Fund not found exception."""
+
+
 def _read_file_contents(filepath: Path = Path("data.json")) -> str:
     """Reads file contents to a string.
 
@@ -72,17 +76,34 @@ def is_company_under_root_fund(root_fund: str, company: str, data: list) -> bool
     return company in json_str
 
 
-def get_companies(root_fund: str, data: dict) -> list:
+def get_companies(root_fund: str, data: list) -> list:
     """Return a deduplicated list of Companies that are nested under
     the provided root fund. Sub-funds will not be present in the
     returned Companies list.
 
     :param str root_fund: Root-level fund in the nested structure.
-    :param dict data: Nested structure of Funds/Companies to parse.
+    :param list data: Nested structure of Funds/Companies to parse.
     :returns list: List of Companies under the root fun.
     """
-    # TODO: add data parsing logic.
-    return []
+    root_funds = {x["name"]: i for i, x in enumerate(data)}
+    if root_fund not in root_funds.keys():
+        raise RootFundNotFound()
+
+    companies = set()
+    def recursive_scan(x):
+        # TODO: Could pull out the `weights` at the same time to avoid
+        # doing another pass when generating the list. It would mean
+        # that I can't use `set` to de-dupe the company names, since I
+        # need to add all of the multiplied weights for each
+        # investment into the Company.
+        for holding in x.get("holdings", []):
+            print(holding)
+            if not "Fund" in holding["name"]:
+                companies.add(holding["name"])
+            recursive_scan(holding)
+
+    recursive_scan(data[root_funds[root_fund]])
+    return list(companies)
 
 
 def get_company_percentage_investment(root_fund: str, company: str, data: dict) -> float:
