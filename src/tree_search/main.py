@@ -51,17 +51,25 @@ def _flatten_branch(root_fund: str, data: dict) -> dict:
     raise NotImplementedError
 
 
-def is_company_under_root_fund(root_fund: str, company: str, data: dict) -> bool:
+def is_company_under_root_fund(root_fund: str, company: str, data: list) -> bool:
     """Return a if the Company is present in the branch under the
     Root Fund or not.
 
     :param str root_fund: Root-level fund in the nested structure.
     :param str company: Company to search for under root fund.
-    :param dict data: Nested structure of Funds/Companies to parse.
+    :param list data: Nested structure of Funds/Companies to parse.
     :returns bool:
     """
-    # TODO: add data parsing logic.
-    return False
+    root_funds = {x["name"]: i for i, x in enumerate(data)}
+    if root_fund not in root_funds.keys():
+        return False
+    # TODO: Ideally I should search down the structure for the company
+    # name, but going to be dirty and convert the everything back to a
+    # json string and do a quick string comparison check. - Very
+    # dirty, but gets something going quickly. Will Refactor this away
+    # very soon!
+    json_str = json.dumps(data[root_funds[root_fund]])
+    return company in json_str
 
 
 def get_companies(root_fund: str, data: dict) -> list:
