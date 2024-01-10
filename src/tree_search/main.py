@@ -97,7 +97,6 @@ def get_companies(root_fund: str, data: list) -> list:
         # need to add all of the multiplied weights for each
         # investment into the Company.
         for holding in x.get("holdings", []):
-            print(holding)
             if not "Fund" in holding["name"]:
                 companies.add(holding["name"])
             recursive_scan(holding)
