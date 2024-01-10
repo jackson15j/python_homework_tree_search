@@ -39,15 +39,15 @@ class TestMain:
         ).sort() == exp.sort()
 
     def test_get_company_percentage_investment(self):
-        # TODO: Update `data` to match expected output.
-        exp_val = 12.34
-        data = {"a": {"b": exp_val}}
-        assert get_company_percentage_investment("a", "b", data) == exp_val
+        exp_val = 15
+        assert get_company_percentage_investment(
+            "Ethical Global Fund", "GoldenGadgets", NORMALISED_DATA
+        ) == exp_val
 
     def test_get_company_percentage_investment_exp_not_found(self):
-        # TODO: Update `data` to match expected output.
-        data = {"a": {}}
-        assert get_company_percentage_investment("a", "c", data) == 0
+        assert get_company_percentage_investment(
+            "Ethical Global Fund", "NonExistantCompany", NORMALISED_DATA
+        ) == 0
 
 
 class TestMainPrivateFunctions:
