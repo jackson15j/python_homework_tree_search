@@ -1,4 +1,8 @@
 SHELL:=/bin/bash
+# ignore files/folders that match target names. eg. Python packages
+# create a `build` folder, which breaks the `make build` target with:
+# `make: 'build' is up to date.`.
+.PHONY: test build lint
 
 create-venv:
 	rm -rf .venv || true

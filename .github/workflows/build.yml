@@ -64,7 +64,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          files: "output/test-reports/*.xml"
+          files: "build/test-reports/*.xml"
 
       - name: Deps - Install build dependencies
         run: make install-build-deps
