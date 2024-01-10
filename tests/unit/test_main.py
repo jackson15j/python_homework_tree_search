@@ -9,18 +9,20 @@ from src.tree_search.main import (
     get_company_percentage_investment,
 )
 
+NORMALISED_DATA = _parse_file_contents(_read_file_contents(Path("exp_data.json")))
+
 
 class TestMain:
     """TODO"""
     def test_is_company_under_root_fund(self):
-        # TODO: Update `data` to match expected output.
-        data = {"a": [{"b": {}}]}
-        assert is_company_under_root_fund("a", "b", data) is True
+        assert is_company_under_root_fund(
+            "Ethical Global Fund", "GoldenGadgets", NORMALISED_DATA
+        ) is True
 
     def test_is_company_not_under_root_fund(self):
-        # TODO: Update `data` to match expected output.
-        data = {"a": [{"b": {}}]}
-        assert is_company_under_root_fund("a", "c", data) is False
+        assert is_company_under_root_fund(
+            "Ethical Global Fund", "NonExistantCompany", NORMALISED_DATA
+        ) is False
 
     def test_get_companies(self):
         # TODO: Update `data` to match expected output.
