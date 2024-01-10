@@ -1,4 +1,41 @@
 """Tree Search Methods."""
+from pathlib import Path
+import json
+
+
+class FileNotFound(Exception):
+    """File not found exception."""
+
+
+def _read_file_contents(filepath: Path = Path("data.json")) -> str:
+    """Reads file contents to a string.
+
+    :param pathlib.Path filepath: file to read.
+    :returns: str.
+    :raises: FileNotFound.
+    """
+    if not filepath.exists():
+        raise FileNotFound(f"{filepath} does not exist!")
+    return filepath.read_text()
+
+
+def _parse_file_contents(json_str: str) -> dict:
+    """Parse JSON Str to a python dict.
+
+    :param str json_str:
+    :returns: dict.
+    """
+    return json.loads(json_str)
+
+
+def _normalise_data(data: dict) -> dict:
+    raise NotImplementedError
+
+
+def _flatten_branch(root_fund: str, data: dict) -> dict:
+    raise NotImplementedError
+
+
 def is_company_under_root_fund(root_fund: str, company: str, data: dict) -> bool:
     """Return a if the Company is present in the branch under the
     Root Fund or not.
@@ -39,3 +76,13 @@ def get_company_percentage_investment(root_fund: str, company: str, data: dict) 
         return 0
     # TODO: add data parsing logic.
     return 0
+
+
+def main():
+    # TODO: Call each function in-turn to get final output.
+    pass
+
+
+if __name__ == "__main__":
+    # TODO:
+    main()
