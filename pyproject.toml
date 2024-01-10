@@ -20,7 +20,7 @@ classifiers = [
 
 [project.optional-dependencies]
 build = [
-    "build >= 0.10.0",
+    "build >= 1.0.3",
 ]
 lint = [
     "ruff >= v0.1.11",
