@@ -115,7 +115,6 @@
   },
   {
     "name": "Fund C",
-    "weight": 0.5,
     "holdings": [
       {
         "name": "Fund D",
@@ -157,7 +156,6 @@
   },
   {
     "name": "Fund D",
-    "weight": 0.4,
     "holdings": [
       {
         "name": "Fund E",

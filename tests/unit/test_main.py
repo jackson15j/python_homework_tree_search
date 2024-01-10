@@ -1,5 +1,9 @@
 """Tests for the main Tree Search methods."""
+from pathlib import Path
 from src.tree_search.main import (
+    _read_file_contents,
+    _parse_file_contents,
+    _normalise_data,
     is_company_under_root_fund,
     get_companies,
     get_company_percentage_investment,
@@ -33,3 +37,16 @@ class TestMain:
         # TODO: Update `data` to match expected output.
         data = {"a": {}}
         assert get_company_percentage_investment("a", "c", data) == 0
+
+
+class TestMainPrivateFunctions:
+    """Attitudes around testing private functions varies between
+    people due to the tight coupling to implementation details. Adding
+    to get me moving swiftly, but will probably delete once I'm happy
+    with the business logic level tests.
+    """
+
+    def test__normalise_data(self):
+        json_str = _read_file_contents()
+        raw_data = _parse_file_contents(json_str)
+        assert _normalise_data(raw_data) == _parse_file_contents(_read_file_contents(Path("exp_data.json")))
