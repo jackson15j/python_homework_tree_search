@@ -56,3 +56,6 @@ test:
 		pytest \
 	)
 
+semantic-release:
+	docker build --progress=plain -f .dev/semantic-release/Dockerfile -t semantic-release .
+	docker run --rm --name sr -e GITHUB_TOKEN=${GITHUB_TOKEN} -v "${PWD}":/app  -v ~/.ssh:/root/.ssh/ semantic-release
