@@ -24,8 +24,6 @@ jobs:
 
       - name: Create .venv
         run: make create-dev-venv
-      - name: Deps - Install dependencies
-        run: make install-deps
       - name: Deps - Install build dependencies
         run: make install-build-deps
       - name: Build - Python Package
