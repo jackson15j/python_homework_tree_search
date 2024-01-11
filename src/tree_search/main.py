@@ -105,19 +105,34 @@ def get_companies(root_fund: str, data: list) -> list:
     return list(companies)
 
 
-def get_company_percentage_investment(root_fund: str, company: str, data: dict) -> float:
+def get_company_percentage_investment(root_fund: str, company: str, data: list) -> float:
     """Returns the percentage investment of the Company in the branch
     under the Root Fund.
 
     :param str root_fund: Root-level fund in the nested structure.
     :param str company: Company to search for under root fund.
-    :param dict data: Nested structure of Funds/Companies to parse.
+    :param list data: Nested structure of Funds/Companies to parse.
     :returns float: Percentage of investment. Returns 0 if Company is
         not under the Root Fund.
     """
     if not is_company_under_root_fund(root_fund, company, data):
         return 0
     # TODO: add data parsing logic.
+    #
+    # EDIT: This is the point where going brute-force is definitely
+    # the wrong way to solve this graphing problem. Going to park this
+    # code and switch over to experimenting with Graph searching like
+    # Depth First Search!
+    percentage = 100
+    def recursive_scan(x, multiplier: float = 1):
+        for holding in x.get("holdings", []):
+            if holding.has_key("holdings"):
+                multiplier = multiplier * (holding["weight"])
+            if holding["name"] != company:
+                pass
+            if holding["name"] == company:
+                percentage = percentage * holding["weight"]
+            recursive_scan(holding)
     return 0
 
 
