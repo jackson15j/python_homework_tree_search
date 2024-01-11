@@ -4,6 +4,9 @@
 #+PROPERTY: header-args:mermaid :prologue "exec 2>&1" :epilogue ":" :pupeteer-config-file ~/.puppeteerrc
 #+PROPERTY: header-args:shell :prologue "exec 2>&1" :epilogue ":" :results drawer :async
 * Tree Search:
+A Tree/Graph Search problem to discover a rogue Company investment in
+a nested structure of Funds (multiple Companies) and direct Companies.
+
 ** Aim:
 - Search a tree of shares of Funds and Companies.
   - Funds can be made up of Companies, and/or more Funds.
@@ -25,8 +28,65 @@
   - Assuming reason will need to be given for the search algorithm used.
   - Assuming reason for searching given structure vs. normalizing
     first (memory vs cpu/time).
+  - Assuming that /"novel"/ non-tree/brute-force solutions may be
+    interesting to view, but not preferred.
+- Assuming this is a focused test of translating a mathematical
+  problem (that I'm guessing was the basis of the PoC for the Company)
+  into code alongside my general work practices as a Dev.
+
+** Expected Graph:
+
+*NOTE:* This is the expected graph given by most tree/graph search
+algorithms which track unique nodes.
+
+I could implement these algorithms (eg. different flavours of /"Depth
+First Search"/) but would need to explicit remove the uniqueness
+tracking so that I can multiple/sum up the weights for each occurrence
+of the Company under the Root node.
+
+With original note of there being no cycles (alongside viewing the
+data/graphs), it will be safe to remove the path tracking.
+
+#+BEGIN_SRC mermaid :file docs/diagrams/exp_graph.png :width "1920"
+  ---
+  title: Expected Graph
+  ---
+  graph TD;
+      r{{Ethical Global Fund}}
+      b(Fund B)
+      c(Fund C)
+      d(Fund D)
+      e(Fund E)
+
+      r-->|0.2|b;
+      r-->|0.5|c;
+      r-->|0.15|d;
+      r-->|0.15|GrapeCo;
+
+      b-->|0.5|MicroFit;
+      b-->|0.3|GreenCo;
+      b-->|0.2|GrapeCo;
+
+      c-->|0.4|d;
+      c-->|0.3|GrapeCo;
+      c-->|0.3|GoldenGadgets;
+
+      d-->|0.1|e;
+      d-->|0.3|SpaceY;
+      d-->|0.6|BeanzRUS;
+
+      e-->|0.2|GrapeCo;
+      e-->|0.8|SolarCorp;
+#+END_SRC
+
+#+RESULTS:
+[[file:docs/diagrams/exp_graph.png]]
 
 ** Napkin Maths:
+
+Taking a quick manual pass of the data, so that I can get some sane
+expectations to add to my tests. This is so that I can follow a TDD
+approach when I start writing my code.
 
 Expected percentages for all Companies under the /"Ethical Global
 Fund"/ branch.
@@ -43,6 +103,64 @@ Fund"/ branch.
 | BeanzRUS      | (0.6 * 0.4 * 0.5) + (0.6 * 0.15)                                                |         21. |
 | GoldenGadgets | 0.3 * 0.5                                                                       |         15. |
 #+TBLFM: $3=$2*100;n5
+
+The above table is the consolidated version of the normalised Graph
+below. These answer the following requirements:
+
+- *Is /GoldenGadgets/ under the /Ethical Global Fund/?*
+  - Yes, as a 2nd level investment under /Fund C/.
+- *If so, what percentage of investment has gone into
+  /GoldenGadgets/?*
+  - 15% (=0.5 * 0.3 * 100=).
+
+*NOTE:* Added the roots after the Fund/Company with underscores to
+stop the graph from linking up identical nodes (eg. ~<root> -> Fund D
+-> Fund E -> <company> == <company>_r_d_e~).
+
+#+BEGIN_SRC mermaid :file docs/diagrams/normalised_graph.png :width "1920"
+  ---
+  title: Normalised Graph
+  ---
+  graph TD;
+      r{{Ethical Global Fund}}
+      b(Fund B)
+      c(Fund C)
+      d(Fund D)
+      d_r_c(Fund D)
+      e(Fund E)
+      e_r_d_c(Fund E)
+
+      r-->|0.2|b;
+      r-->|0.5|c;
+      r-->|0.15|d;
+      r-->|0.15|GrapeCo_r;
+
+      b-->|0.5|MicroFit;
+      b-->|0.3|GreenCo;
+      b-->|0.2|GrapeCo_r_b;
+
+      c-->|0.4|d_r_c;
+      c-->|0.3|GrapeCo_r_c;
+      c-->|0.3|GoldenGadgets;
+
+      d-->|0.1|e;
+      d-->|0.3|SpaceY;
+      d-->|0.6|BeanzRUS;
+
+      d_r_c-->|0.1|e_r_d_c;
+      d_r_c-->|0.3|SpaceY_r_d_c;
+      d_r_c-->|0.6|BeanzRUS_r_d_c;
+
+      e-->|0.2|GrapeCo;
+      e-->|0.8|SolarCorp;
+
+      e_r_d_c-->|0.2|GrapeCo_r_c_d_e;
+      e_r_d_c-->|0.8|SolarCorp_r_c_d_e;
+#+END_SRC
+
+#+RESULTS:
+[[file:docs/diagrams/normalised_graph.png]]
+
 
 * Addendum:
 ** Original Data:
