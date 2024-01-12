@@ -113,10 +113,6 @@ below. These answer the following requirements:
 - *If so, what percentage of investment has gone into
   /GoldenGadgets/?*
   - 15% (=0.5 * 0.3 * 100=).
-
-*NOTE:* Added the roots after the Fund/Company with underscores to
-stop the graph from linking up identical nodes (eg. ~<root> -> Fund D
--> Fund E -> <company> == <company>_r_d_e~).
 The normalised graph below is a visual representation where the
 Company names are not grouped for uniqueness. From a code point of
 view, I need to traverse each branch to total edge weights and then
@@ -134,6 +130,13 @@ sum each branch.
       d_r_c(Fund D)
       e(Fund E)
       e_r_d_c(Fund E)
+      BeanzRUS_r_d_c[BeanzRUS]
+      GrapeCo_r[GrapeCo]
+      GrapeCo_r_b[GrapeCo]
+      GrapeCo_r_c[GrapeCo]
+      GrapeCo_r_c_d_e[GrapeCo]
+      SolarCorp_r_c_d_e[SolarCorp]
+      SpaceY_r_d_c[SpaceY]
 
       r-->|0.2|b;
       r-->|0.5|c;
