@@ -82,37 +82,8 @@ data/graphs), it will be safe to remove the path tracking.
 #+RESULTS:
 [[file:docs/diagrams/exp_graph.png]]
 
-** Napkin Maths:
-
-Taking a quick manual pass of the data, so that I can get some sane
-expectations to add to my tests. This is so that I can follow a TDD
-approach when I start writing my code.
 ** Normalised Graph:
 
-Expected percentages for all Companies under the /"Ethical Global
-Fund"/ branch.
-
-*TODO:* Check programmatically!
-
-| Companies     | Weights                                                                         | Percentages |
-|---------------+---------------------------------------------------------------------------------+-------------|
-| MicroFit      | 0.5 * 0.2                                                                       |         10. |
-| GreenCo       | 0.3 * 0.2                                                                       |          6. |
-| GrapeCo       | (0.2 * 0.2) + (0.2 * 0.1 * 0.4 * 0.5) + (0.3 * 0.5) + (0.2 * 0.1 * 0.15) + 0.15 |        34.7 |
-| SolarCorp     | (0.8 * 0.1 * 0.4 * 0.5) + (0.8 * 0.1 * 0.15)                                    |         2.8 |
-| SpaceY        | (0.3 * 0.4 * 0.5) + (0.3 * 0.15)                                                |        10.5 |
-| BeanzRUS      | (0.6 * 0.4 * 0.5) + (0.6 * 0.15)                                                |         21. |
-| GoldenGadgets | 0.3 * 0.5                                                                       |         15. |
-#+TBLFM: $3=$2*100;n5
-
-The above table is the consolidated version of the normalised Graph
-below. These answer the following requirements:
-
-- *Is /GoldenGadgets/ under the /Ethical Global Fund/?*
-  - Yes, as a 2nd level investment under /Fund C/.
-- *If so, what percentage of investment has gone into
-  /GoldenGadgets/?*
-  - 15% (=0.5 * 0.3 * 100=).
 The normalised graph below is a visual representation where the
 Company names are not grouped for uniqueness. From a code point of
 view, I need to traverse each branch to total edge weights and then
@@ -169,6 +140,47 @@ sum each branch.
 #+RESULTS:
 [[file:docs/diagrams/normalised_graph.png]]
 
+** Napkin Maths:
+
+Taking a quick manual pass of the data, so that I can get some sane
+expectations to add to my tests. This is so that I can follow a TDD
+approach when I start writing my code.
+
+Expected percentages for all Companies under the /"Ethical Global
+Fund"/ branch. These are worked about by doing the following:
+
+- Diagram the graph (See: [[*Expected Graph:][Expected Graph]], [[*Normalised Graph:][Normalised Graph]] sections).
+- Multiply all of the weights on the edges between the root node and
+  the chosen Companies node, to get a total weight for that path.
+  - Repeat for each additional Company node path down a different
+    branch.
+- Sum all of the path weights for the Company.
+- Repeat for all other Companies.
+
+Ideally, the above /should/ be done as part of the first pass of
+walking the graph.
+
+*TODO:* Check programmatically!
+
+| Companies     | Path Weights                                                                    | Investment (%) |
+|---------------+---------------------------------------------------------------------------------+----------------|
+| MicroFit      | 0.5 * 0.2                                                                       |            10. |
+| GreenCo       | 0.3 * 0.2                                                                       |             6. |
+| GrapeCo       | (0.2 * 0.2) + (0.2 * 0.1 * 0.4 * 0.5) + (0.3 * 0.5) + (0.2 * 0.1 * 0.15) + 0.15 |           34.7 |
+| SolarCorp     | (0.8 * 0.1 * 0.4 * 0.5) + (0.8 * 0.1 * 0.15)                                    |            2.8 |
+| SpaceY        | (0.3 * 0.4 * 0.5) + (0.3 * 0.15)                                                |           10.5 |
+| BeanzRUS      | (0.6 * 0.4 * 0.5) + (0.6 * 0.15)                                                |            21. |
+| GoldenGadgets | 0.3 * 0.5                                                                       |            15. |
+#+TBLFM: $3=$2*100;n5
+
+The above table is the consolidated version of the [[*Normalised Graph:][Normalised Graph]],
+which answers the following requirements:
+
+- *Is /GoldenGadgets/ under the /Ethical Global Fund/?*
+  - Yes, as a 2nd level investment under /Fund C/.
+- *If so, what percentage of investment has gone into
+  /GoldenGadgets/?*
+  - 15% (=0.5 * 0.3 * 100=).
 
 * Addendum:
 ** Original Data:
