@@ -87,6 +87,7 @@ data/graphs), it will be safe to remove the path tracking.
 Taking a quick manual pass of the data, so that I can get some sane
 expectations to add to my tests. This is so that I can follow a TDD
 approach when I start writing my code.
+** Normalised Graph:
 
 Expected percentages for all Companies under the /"Ethical Global
 Fund"/ branch.
@@ -116,6 +117,10 @@ below. These answer the following requirements:
 *NOTE:* Added the roots after the Fund/Company with underscores to
 stop the graph from linking up identical nodes (eg. ~<root> -> Fund D
 -> Fund E -> <company> == <company>_r_d_e~).
+The normalised graph below is a visual representation where the
+Company names are not grouped for uniqueness. From a code point of
+view, I need to traverse each branch to total edge weights and then
+sum each branch.
 
 #+BEGIN_SRC mermaid :file docs/diagrams/normalised_graph.png :width "1920"
   ---
