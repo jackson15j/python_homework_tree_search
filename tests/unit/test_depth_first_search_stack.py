@@ -20,3 +20,21 @@ class TestDepthFirstSearchStack:
             "E": 0.07,
         }
         assert dfs(graph, "A") == exp
+
+    def test_depth_first_search_simple_graph_that_mimics_expected_data(self):
+        """Test DFS on an arbitrary graph that more closely mimics
+        expected graph data with Funds having a "holdings" section.
+        """
+        graph = [
+            {"name": "A", "holdings": [{"name": "B", "weight": 0.2}, {"name": "C", "weight": 0.8}]},
+            {"name": "B", "holdings": [{"name": "C", "weight": 0.3}, {"name": "D", "weight": 0.7}]},
+            {"name": "D", "holdings": [{"name": "C", "weight": 0.5}, {"name": "E", "weight": 0.5}]},
+        ]
+        exp = {
+            "A": 1,
+            "B": 0.2,
+            "C": 0.93,
+            "D": 0.14,
+            "E": 0.07,
+        }
+        assert dfs(graph, "A") == exp
