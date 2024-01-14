@@ -180,6 +180,68 @@ which answers the following requirements:
   /GoldenGadgets/?*
   - 15% (=0.5 * 0.3 * 100=).
 
+** Retrospective:
+
+*** Good:
+- Napkin maths and diagrams helped with planning and cementing ideas
+  before coding.
+  - Set TDD Expectations and Red/Green/Refactor workflow.
+  - initial brute force method partially worked, but highlighted how
+    much effort down the wrong path vs graph algorithms.
+  - Some code reuse from brute force work.
+- Knowing it was an tree search algorithms problem up front helped
+  set research aim.
+
+*** Bad:
+- Spent too long on repo pipeline setup:
+  - I try to think of how to Release de-risked code first.
+  - Main aim is setup CI with packaging + tests, then you can always
+    Release from day 1.
+- Rusty from not coding algorithms in a long time.
+  - ie. Algorithms has not been a limiting factor or part of the
+    Solutions I've worked on in past Companies.
+
+*** Ugly:
+- Bad maths + rusty recursion kept me stuck for a while.
+  - Should have kept it simple and started with the non-recursive
+    stack method first!.
+  - Was mentally stuck, for a period, on the best way to pass down
+    parent cumulative edge multipliers without overwriting.
+
+*** Future:
+- Sort out all =TODO=/=FIXME= notes that were left in the code
+  (non-MVP changes).
+- Containerise the built artefact for easier cloud deployment. ie. Add
+  a =Dockerfile= to build the code in.
+- Could try out the dag libraries or other implementations for
+  comparison. eg.
+  - [[https://www.geeksforgeeks.org/python-program-for-depth-first-search-or-dfs-for-a-graph/][Geeks for Geeks: DFS via a Graph instance]] - would require an
+    in-memory pass to create the graph instance from the JSONL data
+    first of all.
+  - [[https://docs.python.org/3/library/graphlib.html][Python Docs: =graphlib=]] - Native support for graph-like structures
+    in Python since Python3.9 /(new knowledge for me)/.
+  - [[https://networkx.org/nx-guides/][NetworkX]] - Library of Graph analysis and Algorithms.
+- should profile my methods vs library vs stateful class vs brute
+  force
+- *Additional Algorithms:*
+  - Could try out BFS (Breadth First Search)? Or any number of other
+    [[https://en.wikipedia.org/wiki/Tree_traversal][Wikipedia: Tree Traversal]] algorithms?
+    - Ideally Refactor to use a common interface for each algorithm.
+    - Ideally Refactor tests to de-dupe (eg. inheritance).
+  - Could look at implementing [[https://en.wikipedia.org/wiki/Dijkstra's_algorithm][Wikipedia: Dijkstra's algorithm]] to
+    handle cycles (but would have to figure out how to get all paths
+    to calculate cumulative edge weights).
+  - What other algorithms are worth trying but currently in my:
+    /"Unknown:Unknown"/ section of personal knowledge.
+- *OPTIMISATIONS:*
+  - Could try a DFS with visited state to generate list of all
+    companies under a root?
+  - Bail on first hit of company?
+    - Would require multiple passes to gather weights + ask same
+      question for other Companies.
+- Can I do the graph building without munging into new structures in
+  memory?
+
 * Addendum:
 ** Usage:
 
