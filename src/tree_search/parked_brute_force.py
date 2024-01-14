@@ -7,7 +7,6 @@ problem.
 Keeping for prosperity, but would typically delete and leave as a
 historical point in version control.
 """
-from pathlib import Path
 from pprint import pprint
 import json
 
@@ -85,7 +84,7 @@ def get_companies(root_fund: str, data: list) -> list:
         # need to add all of the multiplied weights for each
         # investment into the Company.
         for holding in x.get("holdings", []):
-            if not "Fund" in holding["name"]:
+            if "Fund" not in holding["name"]:
                 companies.add(holding["name"])
             recursive_scan(holding)
 
@@ -119,7 +118,7 @@ def get_company_percentage_investment(root_fund: str, company: str, data: list) 
             if holding["name"] != company:
                 pass
             if holding["name"] == company:
-                percentage = percentage * holding["weight"]
+                _ = percentage * holding["weight"]
             recursive_scan(holding)
     return 0
 

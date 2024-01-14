@@ -48,6 +48,18 @@ lint:
 		ruff check \
 	)
 
+lint-fix:
+	@( \
+		. .venv-dev/bin/activate; \
+		ruff check --fix \
+	)
+
+lint-fix-unsafe:
+	@( \
+		. .venv-dev/bin/activate; \
+		ruff check --fix --unsafe-fixes \
+	)
+
 build:
 	@( \
 		. .venv-dev/bin/activate; \

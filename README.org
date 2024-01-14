@@ -82,40 +82,12 @@ data/graphs), it will be safe to remove the path tracking.
 #+RESULTS:
 [[file:docs/diagrams/exp_graph.png]]
 
-** Napkin Maths:
+** Normalised Graph:
 
-Taking a quick manual pass of the data, so that I can get some sane
-expectations to add to my tests. This is so that I can follow a TDD
-approach when I start writing my code.
-
-Expected percentages for all Companies under the /"Ethical Global
-Fund"/ branch.
-
-*TODO:* Check programmatically!
-
-| Companies     | Weights                                                                         | Percentages |
-|---------------+---------------------------------------------------------------------------------+-------------|
-| MicroFit      | 0.5 * 0.2                                                                       |         10. |
-| GreenCo       | 0.3 * 0.2                                                                       |          6. |
-| GrapeCo       | (0.2 * 0.2) + (0.2 * 0.1 * 0.4 * 0.5) + (0.3 * 0.5) + (0.2 * 0.1 * 0.15) + 0.15 |        34.7 |
-| SolarCorp     | (0.8 * 0.1 * 0.4 * 0.5) + (0.8 * 0.1 * 0.15)                                    |         2.8 |
-| SpaceY        | (0.3 * 0.4 * 0.5) + (0.3 * 0.15)                                                |        10.5 |
-| BeanzRUS      | (0.6 * 0.4 * 0.5) + (0.6 * 0.15)                                                |         21. |
-| GoldenGadgets | 0.3 * 0.5                                                                       |         15. |
-#+TBLFM: $3=$2*100;n5
-
-The above table is the consolidated version of the normalised Graph
-below. These answer the following requirements:
-
-- *Is /GoldenGadgets/ under the /Ethical Global Fund/?*
-  - Yes, as a 2nd level investment under /Fund C/.
-- *If so, what percentage of investment has gone into
-  /GoldenGadgets/?*
-  - 15% (=0.5 * 0.3 * 100=).
-
-*NOTE:* Added the roots after the Fund/Company with underscores to
-stop the graph from linking up identical nodes (eg. ~<root> -> Fund D
--> Fund E -> <company> == <company>_r_d_e~).
+The normalised graph below is a visual representation where the
+Company names are not grouped for uniqueness. From a code point of
+view, I need to traverse each branch to total edge weights and then
+sum each branch.
 
 #+BEGIN_SRC mermaid :file docs/diagrams/normalised_graph.png :width "1920"
   ---
@@ -129,6 +101,13 @@ stop the graph from linking up identical nodes (eg. ~<root> -> Fund D
       d_r_c(Fund D)
       e(Fund E)
       e_r_d_c(Fund E)
+      BeanzRUS_r_d_c[BeanzRUS]
+      GrapeCo_r[GrapeCo]
+      GrapeCo_r_b[GrapeCo]
+      GrapeCo_r_c[GrapeCo]
+      GrapeCo_r_c_d_e[GrapeCo]
+      SolarCorp_r_c_d_e[SolarCorp]
+      SpaceY_r_d_c[SpaceY]
 
       r-->|0.2|b;
       r-->|0.5|c;
@@ -161,8 +140,184 @@ stop the graph from linking up identical nodes (eg. ~<root> -> Fund D
 #+RESULTS:
 [[file:docs/diagrams/normalised_graph.png]]
 
+** Napkin Maths:
+
+Taking a quick manual pass of the data, so that I can get some sane
+expectations to add to my tests. This is so that I can follow a TDD
+approach when I start writing my code.
+
+Expected percentages for all Companies under the /"Ethical Global
+Fund"/ branch. These are worked about by doing the following:
+
+- Diagram the graph (See: [[*Expected Graph:][Expected Graph]], [[*Normalised Graph:][Normalised Graph]] sections).
+- Multiply all of the weights on the edges between the root node and
+  the chosen Companies node, to get a total weight for that path.
+  - Repeat for each additional Company node path down a different
+    branch.
+- Sum all of the path weights for the Company.
+- Repeat for all other Companies.
+
+Ideally, the above /should/ be done as part of the first pass of
+walking the graph.
+
+*TODO:* Check programmatically!
+
+| Companies     | Path Weights                                                                    | Investment (%) |
+|---------------+---------------------------------------------------------------------------------+----------------|
+| MicroFit      | 0.5 * 0.2                                                                       |            10. |
+| GreenCo       | 0.3 * 0.2                                                                       |             6. |
+| GrapeCo       | (0.2 * 0.2) + (0.2 * 0.1 * 0.4 * 0.5) + (0.3 * 0.5) + (0.2 * 0.1 * 0.15) + 0.15 |           34.7 |
+| SolarCorp     | (0.8 * 0.1 * 0.4 * 0.5) + (0.8 * 0.1 * 0.15)                                    |            2.8 |
+| SpaceY        | (0.3 * 0.4 * 0.5) + (0.3 * 0.15)                                                |           10.5 |
+| BeanzRUS      | (0.6 * 0.4 * 0.5) + (0.6 * 0.15)                                                |            21. |
+| GoldenGadgets | 0.3 * 0.5                                                                       |            15. |
+#+TBLFM: $3=$2*100;n5
+
+The above table is the consolidated version of the [[*Normalised Graph:][Normalised Graph]],
+which answers the following requirements:
+
+- *Is /GoldenGadgets/ under the /Ethical Global Fund/?*
+  - Yes, as a 2nd level investment under /Fund C/.
+- *If so, what percentage of investment has gone into
+  /GoldenGadgets/?*
+  - 15% (=0.5 * 0.3 * 100=).
 
 * Addendum:
+** Usage:
+
+- Pre-requisites:
+
+  #+BEGIN_SRC shell
+    brew install python@3.12 make
+    echo export PATH=/opt/homebrew/opt/python@3.12/libexec/bin:$PATH >> ~/.zprofile
+  #+END_SRC
+
+  #+RESULTS:
+  :results:
+  Running `brew update --auto-update`...
+  ==> Auto-updated Homebrew!
+
+  Warning: python@3.12 3.12.1 is already installed and up-to-date.
+  To reinstall 3.12.1, run:
+    brew reinstall python@3.12
+  Warning: make 4.4.1 is already installed and up-to-date.
+  To reinstall 4.4.1, run:
+    brew reinstall make
+  :end:
+
+- Running the code/tests:
+
+  #+BEGIN_SRC shell
+    # Add path to brew installed python on mac, since Mac only has
+    # an old version of python/pip available as python3/pip3.
+    export PATH=/opt/homebrew/opt/python@3.12/libexec/bin:$PATH
+    make create-dev-venv
+    make install-test-deps
+    make test
+    make run-dev
+  #+END_SRC
+
+  #+RESULTS:
+  :results:
+  rm -rf .venv-dev || true
+  python -m venv .venv-dev
+  Processing /Users/craig/github_repos/python_homework_tree_search
+    Installing build dependencies: started
+    Installing build dependencies: finished with status 'done'
+    Getting requirements to build wheel: started
+    Getting requirements to build wheel: finished with status 'done'
+    Installing backend dependencies: started
+    Installing backend dependencies: finished with status 'done'
+    Preparing metadata (pyproject.toml): started
+    Preparing metadata (pyproject.toml): finished with status 'done'
+  Collecting pytest>=7.4.4
+    Using cached pytest-7.4.4-py3-none-any.whl.metadata (7.9 kB)
+  Collecting pytest-cov>=4.1.0
+    Using cached pytest_cov-4.1.0-py3-none-any.whl.metadata (26 kB)
+  Collecting pytest-html>=4.1.1
+    Using cached pytest_html-4.1.1-py3-none-any.whl.metadata (3.9 kB)
+  Collecting iniconfig (from pytest>=7.4.4)
+    Using cached iniconfig-2.0.0-py3-none-any.whl (5.9 kB)
+  Collecting packaging (from pytest>=7.4.4)
+    Using cached packaging-23.2-py3-none-any.whl.metadata (3.2 kB)
+  Collecting pluggy<2.0,>=0.12 (from pytest>=7.4.4)
+    Using cached pluggy-1.3.0-py3-none-any.whl.metadata (4.3 kB)
+  Collecting coverage>=5.2.1 (from coverage[toml]>=5.2.1->pytest-cov>=4.1.0)
+    Using cached coverage-7.4.0-cp312-cp312-macosx_11_0_arm64.whl.metadata (8.1 kB)
+  Collecting jinja2>=3.0.0 (from pytest-html>=4.1.1)
+    Using cached Jinja2-3.1.3-py3-none-any.whl.metadata (3.3 kB)
+  Collecting pytest-metadata>=2.0.0 (from pytest-html>=4.1.1)
+    Using cached pytest_metadata-3.0.0-py3-none-any.whl.metadata (8.6 kB)
+  Collecting MarkupSafe>=2.0 (from jinja2>=3.0.0->pytest-html>=4.1.1)
+    Using cached MarkupSafe-2.1.3-cp312-cp312-macosx_10_9_universal2.whl.metadata (2.9 kB)
+  Using cached pytest-7.4.4-py3-none-any.whl (325 kB)
+  Using cached pytest_cov-4.1.0-py3-none-any.whl (21 kB)
+  Using cached pytest_html-4.1.1-py3-none-any.whl (23 kB)
+  Using cached coverage-7.4.0-cp312-cp312-macosx_11_0_arm64.whl (206 kB)
+  Using cached Jinja2-3.1.3-py3-none-any.whl (133 kB)
+  Using cached pluggy-1.3.0-py3-none-any.whl (18 kB)
+  Using cached pytest_metadata-3.0.0-py3-none-any.whl (10 kB)
+  Using cached packaging-23.2-py3-none-any.whl (53 kB)
+  Using cached MarkupSafe-2.1.3-cp312-cp312-macosx_10_9_universal2.whl (17 kB)
+  Building wheels for collected packages: tree_search
+    Building wheel for tree_search (pyproject.toml): started
+    Building wheel for tree_search (pyproject.toml): finished with status 'done'
+    Created wheel for tree_search: filename=tree_search-0.1.dev46+gd29e381.d20240114-py3-none-any.whl size=30616 sha256=07657a950c3977107ff8742de5312b0164a0ee74bec66856955ce601e82444fd
+    Stored in directory: /private/var/folders/tl/tpmbfj7n33x27vbhqn_70y1r0000gn/T/pip-ephem-wheel-cache-srm13jt9/wheels/0b/cb/f4/f6ed325ef008f287116cbe2c35870a9a9c4b07c2ddf5554b14
+  Successfully built tree_search
+  Installing collected packages: tree_search, pluggy, packaging, MarkupSafe, iniconfig, coverage, pytest, jinja2, pytest-metadata, pytest-cov, pytest-html
+  Successfully installed MarkupSafe-2.1.3 coverage-7.4.0 iniconfig-2.0.0 jinja2-3.1.3 packaging-23.2 pluggy-1.3.0 pytest-7.4.4 pytest-cov-4.1.0 pytest-html-4.1.1 pytest-metadata-3.0.0 tree_search-0.1.dev46+gd29e381.d20240114
+
+  [notice] A new release of pip is available: 23.3.1 -> 23.3.2
+  [notice] To update, run: pip install --upgrade pip
+  ============================= test session starts ==============================
+  platform darwin -- Python 3.12.1, pytest-7.4.4, pluggy-1.3.0 -- /Users/craig/github_repos/python_homework_tree_search/.venv-dev/bin/python3.12
+  cachedir: .pytest_cache
+  metadata: {'Python': '3.12.1', 'Platform': 'macOS-14.2-arm64-arm-64bit', 'Packages': {'pytest': '7.4.4', 'pluggy': '1.3.0'}, 'Plugins': {'html': '4.1.1', 'cov': '4.1.0', 'metadata': '3.0.0'}}
+  rootdir: /Users/craig/github_repos/python_homework_tree_search
+  configfile: pyproject.toml
+  plugins: html-4.1.1, cov-4.1.0, metadata-3.0.0
+  collecting ... collected 12 items
+
+  tests/unit/test_depth_first_search_stack.py::TestDepthFirstSearchStack::test_depth_first_search_simple_graph PASSED [  8%]
+  tests/unit/test_depth_first_search_stack.py::TestDepthFirstSearchStack::test_depth_first_search_simple_graph_that_mimics_expected_data PASSED [ 16%]
+  tests/unit/test_depth_first_search_stack.py::TestDepthFirstSearchStack::test_depth_first_search_real_data PASSED [ 25%]
+  tests/unit/test_main.py::TestMain::test_get_unique_companies_without_funds PASSED [ 33%]
+  tests/unit/test_main.py::TestMain::test_is_golden_gadgets_under_ethical_global_fund PASSED [ 41%]
+  tests/unit/test_main.py::TestMain::test_what_percentage_of_investment_is_in_golden_gadgets PASSED [ 50%]
+  tests/unit/test_parked_brute_force.py::TestParkedBruteForce::test_is_company_under_root_fund PASSED [ 58%]
+  tests/unit/test_parked_brute_force.py::TestParkedBruteForce::test_is_company_not_under_root_fund PASSED [ 66%]
+  tests/unit/test_parked_brute_force.py::TestParkedBruteForce::test_get_companies PASSED [ 75%]
+  tests/unit/test_parked_brute_force.py::TestParkedBruteForce::test_get_company_percentage_investment SKIPPED [ 83%]
+  tests/unit/test_parked_brute_force.py::TestParkedBruteForce::test_get_company_percentage_investment_exp_not_found SKIPPED [ 91%]
+  tests/unit/test_parked_brute_force.py::TestParkedBruteForcePrivateFunctions::test__normalise_data PASSED [100%]
+
+  - generated xml file: /Users/craig/github_repos/python_homework_tree_search/build/test-reports/py_unittests.xml -
+  ============================= slowest 10 durations =============================
+  0.00s call     tests/unit/test_parked_brute_force.py::TestParkedBruteForcePrivateFunctions::test__normalise_data
+  0.00s setup    tests/unit/test_depth_first_search_stack.py::TestDepthFirstSearchStack::test_depth_first_search_simple_graph
+  0.00s call     tests/unit/test_depth_first_search_stack.py::TestDepthFirstSearchStack::test_depth_first_search_simple_graph
+  0.00s call     tests/unit/test_parked_brute_force.py::TestParkedBruteForce::test_is_company_under_root_fund
+  0.00s call     tests/unit/test_depth_first_search_stack.py::TestDepthFirstSearchStack::test_depth_first_search_real_data
+  0.00s call     tests/unit/test_depth_first_search_stack.py::TestDepthFirstSearchStack::test_depth_first_search_simple_graph_that_mimics_expected_data
+  0.00s call     tests/unit/test_parked_brute_force.py::TestParkedBruteForce::test_is_company_not_under_root_fund
+  0.00s setup    tests/unit/test_depth_first_search_stack.py::TestDepthFirstSearchStack::test_depth_first_search_simple_graph_that_mimics_expected_data
+  0.00s teardown tests/unit/test_depth_first_search_stack.py::TestDepthFirstSearchStack::test_depth_first_search_simple_graph
+  0.00s setup    tests/unit/test_parked_brute_force.py::TestParkedBruteForce::test_get_company_percentage_investment
+  - Generated html report: file:///Users/craig/github_repos/python_homework_tree_search/build/test-reports/py_unittests.html -
+  =========================== short test summary info ============================
+  SKIPPED [1] tests/unit/test_parked_brute_force.py:48: Parked brute force solution.
+  SKIPPED [1] tests/unit/test_parked_brute_force.py:55: Parked brute force solution.
+  ======================== 10 passed, 2 skipped in 0.08s =========================
+  DEBUG: Cumulative weights for each Fund/Company:  {'Ethical Global Fund': 1, 'GrapeCo': 0.347, 'Fund D': 0.35, 'BeanzRUS': 0.21, 'SpaceY': 0.105, 'Fund E': 0.035, 'SolarCorp': 0.028, 'Fund C': 0.5, 'GoldenGadgets': 0.15, 'Fund B': 0.2, 'GreenCo': 0.06, 'MicroFit': 0.1}
+  List of all Companies (minus Funds!), under root Fund:
+      'Ethical Global Fund': ['GrapeCo', 'BeanzRUS', 'SpaceY', 'SolarCorp', 'GoldenGadgets', 'GreenCo', 'MicroFit']
+  Is 'GoldenGadgets' under 'Ethical Global Fund'?:
+      True.
+  ...And if so, what percentage of investment has gone to 'GoldenGadgets'?:
+      15.0%
+  :end:
+
 ** Original Data:
 
 #+BEGIN_EXAMPLE json
