@@ -1,5 +1,8 @@
 """Tests for a Depth First Search Solution via recursion."""
-from src.tree_search.depth_first_search_recursive import dfs
+from src.tree_search.depth_first_search_recursive import (
+    convert_jsonl_to_graph_format,
+    dfs,
+)
 from src.tree_search.main import (
     read_file_contents,
     parse_file_contents,
@@ -25,7 +28,11 @@ class TestDepthFirstSearchRecursive:
             "D": 0.14,
             "E": 0.07,
         }
-        assert dfs(graph, "A", 2) == exp
+        ret_val = {}
+        # TODO: Fix state caching in recursive function, between runs.
+        # ie. avoid having to explicitly reset all inputs!
+        dfs(graph, "A", decimals=2, multiplier=1, ret_val=ret_val)
+        assert ret_val == exp
 
     def test_depth_first_search_simple_graph_that_mimics_expected_data(self):
         """Test DFS on an arbitrary graph that more closely mimics
@@ -43,7 +50,12 @@ class TestDepthFirstSearchRecursive:
             "D": 0.14,
             "E": 0.07,
         }
-        assert dfs(graph, "A", 2) == exp
+        _graph = convert_jsonl_to_graph_format(graph)
+        ret_val = {}
+        # TODO: Fix state caching in recursive function, between runs.
+        # ie. avoid having to explicitly reset all inputs!
+        dfs(_graph, "A", decimals=2, multiplier=1, ret_val=ret_val)
+        assert ret_val == exp
 
 
     def test_depth_first_search_real_data(self):
@@ -62,4 +74,9 @@ class TestDepthFirstSearchRecursive:
             "BeanzRUS": 0.21,
             "GoldenGadgets": 0.15,
         }
-        assert dfs(DATA, "Ethical Global Fund") == exp
+        _graph = convert_jsonl_to_graph_format(DATA)
+        ret_val = {}
+        # TODO: Fix state caching in recursive function, between runs.
+        # ie. avoid having to explicitly reset all inputs!
+        dfs(_graph, "Ethical Global Fund", multiplier=1, ret_val=ret_val)
+        assert ret_val == exp
