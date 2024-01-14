@@ -1,6 +1,6 @@
 """Depth First Search via a stack."""
 
-def dfs(graph: dict, node: str) -> dict[str, float]:
+def dfs(graph: dict|list, node: str) -> dict[str, float]:
     """Depth First Search via a stack, which returns all nodes instead
     of a list of _"first-seen"_ eg.
 
@@ -19,12 +19,13 @@ def dfs(graph: dict, node: str) -> dict[str, float]:
     searches down each branch. The same multiplier will be used for
     all neighbouring nodes.
 
-    :param dict graph: Dict of graph keys and sub lists.
+    :param dict graph: Dict|list of graph keys and sub lists.
     :param str node: Root node to start searching from.
     :returns: dict of Nodes with cumulative weights as values. eg.
         {"A": 1, "B": 0.2, "C": 0.93, "D": 0.14, "E": 0.07,}.
     """
     ret_val = {}
+    _graph = convert_jsonl_to_graph_format(graph)
     multiplier = 1
     s = []
     s.append((node, multiplier))
@@ -39,8 +40,14 @@ def dfs(graph: dict, node: str) -> dict[str, float]:
             # places.
             ret_val[_node] = float(f"{ret_val[_node] + _multiplier:.2f}")
 
-        for node in graph.get(_node, []):
+        for node in _graph.get(_node, []):
             s.append(
                 (node["name"], float(f"{node["weight"] * _multiplier:.2f}"))
             )
     return ret_val
+
+
+def convert_jsonl_to_graph_format(graph: list) -> dict[str, list]:
+    if not isinstance(graph, list):
+        return graph
+    return {x["name"]: x["holdings"] for x in graph}
