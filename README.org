@@ -252,7 +252,6 @@ which answers the following requirements:
     echo export PATH=/opt/homebrew/opt/python@3.12/libexec/bin:$PATH >> ~/.zprofile
   #+END_SRC
 
-  #+RESULTS:
   #+begin_src shell
   Warning: python@3.12 3.12.1 is already installed and up-to-date.
   To reinstall 3.12.1, run:
@@ -274,7 +273,6 @@ which answers the following requirements:
     make run-dev
   #+END_SRC
 
-  #+RESULTS:
   #+begin_src shell
   rm -rf .venv-dev || true
   python -m venv .venv-dev
