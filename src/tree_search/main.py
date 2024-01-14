@@ -36,10 +36,21 @@ def get_unique_companies_without_funds(weighted_funds: dict[str, float]) -> list
     return [x for x in weighted_funds if "Fund" not in x]
 
 
+def is_company_under_fund(fund_data: dict[str, float], company: str) -> bool:
+    return company in fund_data
+
+
+def get_company_investment_percentage_under_fund(
+        fund_data: dict[str, float], company: str
+) -> float:
+    return fund_data.get(company, 0.0) * 100
+
+
 def main():
     json_str = read_file_contents()
     raw_data = parse_file_contents(json_str)
     output = dfs(raw_data, "Ethical Global Fund")
+    print("DEBUG: Cumulative weights for each Fund/Company: ", output)
     companies = get_unique_companies_without_funds(output)
     # Answer: [
     #     'GrapeCo', 'BeanzRUS', 'SpaceY', 'SolarCorp',
