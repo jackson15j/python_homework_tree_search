@@ -25,7 +25,7 @@ class TestDepthFirstSearchStack:
             "D": 0.14,
             "E": 0.07,
         }
-        assert dfs(graph, "A") == exp
+        assert dfs(graph, "A", 2) == exp
 
     def test_depth_first_search_simple_graph_that_mimics_expected_data(self):
         """Test DFS on an arbitrary graph that more closely mimics
@@ -43,7 +43,7 @@ class TestDepthFirstSearchStack:
             "D": 0.14,
             "E": 0.07,
         }
-        assert dfs(graph, "A") == exp
+        assert dfs(graph, "A", 2) == exp
 
 
     def test_depth_first_search_real_data(self):

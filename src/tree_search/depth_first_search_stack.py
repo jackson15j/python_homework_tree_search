@@ -1,6 +1,6 @@
 """Depth First Search via a stack."""
 
-def dfs(graph: dict|list, node: str) -> dict[str, float]:
+def dfs(graph: dict|list, node: str, decimals: int = 3) -> dict[str, float]:
     """Depth First Search via a stack, which returns all nodes instead
     of a list of _"first-seen"_ eg.
 
@@ -21,6 +21,7 @@ def dfs(graph: dict|list, node: str) -> dict[str, float]:
 
     :param dict graph: Dict|list of graph keys and sub lists.
     :param str node: Root node to start searching from.
+    :param int decimals: Round to X decimal places.
     :returns: dict of Nodes with cumulative weights as values. eg.
         {"A": 1, "B": 0.2, "C": 0.93, "D": 0.14, "E": 0.07,}.
     """
@@ -36,13 +37,18 @@ def dfs(graph: dict|list, node: str) -> dict[str, float]:
             ret_val[_node] = _multiplier
         else:
             # NOTE: `ret_val[_node] += _multiplier` is _more concise,
-            # but it doesn't keep the float constrained to 2 decimal
-            # places.
-            ret_val[_node] = float(f"{ret_val[_node] + _multiplier:.2f}")
+            # but it doesn't keep the float constrained to `decimals`
+            # decimal places.
+            ret_val[_node] = float(
+                f"{ret_val[_node] + _multiplier:.{decimals}f}"
+            )
 
         for node in _graph.get(_node, []):
             s.append(
-                (node["name"], float(f"{node["weight"] * _multiplier:.2f}"))
+                (
+                    node["name"],
+                    float(f"{node["weight"] * _multiplier:.{decimals}f}")
+                )
             )
     return ret_val
 
