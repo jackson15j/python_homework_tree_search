@@ -118,7 +118,7 @@ def get_company_percentage_investment(root_fund: str, company: str, data: list) 
             if holding["name"] != company:
                 pass
             if holding["name"] == company:
-                percentage = percentage * holding["weight"]
+                _ = percentage * holding["weight"]
             recursive_scan(holding)
     return 0
 
